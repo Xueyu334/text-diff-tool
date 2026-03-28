@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form v-model="data" label-position="right" label-suffix=":" label-width="auto" size="default">
+    <el-form :model="data" label-position="right" label-suffix=":" label-width="auto" size="default">
       <el-row :gutter="12" justify="start">
         <el-col v-bind="{ xs: 24, sm: 24, md: 8, lg: 6, xl: 4 }">
           <el-form-item label="差异比对模式" prop="diffMode">
@@ -28,31 +28,41 @@
         </el-col>
         <el-col v-bind="{ xs: 24, sm: 24, md: 8, lg: 6, xl: 6 }">
           <el-form-item label="语言" prop="language">
-            <el-select v-model="data.language" placeholder="请选择语言" style="width: 240px">
-              <el-option label="纯文本" value="plaintext" />
-              <el-option label="JSON" value="json" />
-              <el-option label="JavaScript" value="javascript" />
-              <el-option label="TypeScript" value="typescript" />
-              <el-option label="XML / HTML" value="xml" />
-              <el-option label="CSS" value="css" />
-              <el-option label="Markdown" value="markdown" />
+            <el-select v-model="data.language" class="language-select" placeholder="请选择语言">
+              <el-option label="纯文本" value="plaintext"/>
+              <el-option label="JSON" value="json"/>
+              <el-option label="JavaScript" value="javascript"/>
+              <el-option label="TypeScript" value="typescript"/>
+              <el-option label="XML / HTML" value="xml"/>
+              <el-option label="CSS" value="css"/>
+              <el-option label="Markdown" value="markdown"/>
             </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-row :gutter="12">
-            <el-col :span="12">
+            <el-col :xs="24" :md="12">
               <el-form-item label="左侧内容" prop="prevText">
-                <el-input v-model="data.prevText" :autosize="{ minRows: 4, maxRows: 10 }"
-                  style="width: 600px; max-width: 100%;" type="textarea" :maxlength="MAX_TEXT_LENGTH"
-                  show-word-limit></el-input>
+                <el-input
+                    v-model="data.prevText"
+                    :autosize="{ minRows: 4, maxRows: 10 }"
+                    class="text-input"
+                    type="textarea"
+                    :maxlength="MAX_TEXT_LENGTH"
+                    show-word-limit
+                />
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :xs="24" :md="12">
               <el-form-item label="右侧内容" prop="currText">
-                <el-input v-model="data.currText" :autosize="{ minRows: 4, maxRows: 10 }"
-                  style="width: 600px; max-width: 100%;" type="textarea" :maxlength="MAX_TEXT_LENGTH"
-                  show-word-limit></el-input>
+                <el-input
+                    v-model="data.currText"
+                    :autosize="{ minRows: 4, maxRows: 10 }"
+                    class="text-input"
+                    type="textarea"
+                    :maxlength="MAX_TEXT_LENGTH"
+                    show-word-limit
+                />
               </el-form-item>
             </el-col>
           </el-row>
@@ -75,8 +85,8 @@
     <el-row>
       <el-col :span="24">
         <VueDiff :current="data.currText" :folding="data.folding" :input-delay="data.inputDelay"
-          :language="data.language" :mode="data.diffMode" :prev="data.prevText" :theme="data.theme"
-          :virtual-scroll="virtualScrollOptions" />
+                 :language="data.language" :mode="data.diffMode" :prev="data.prevText" :theme="data.theme"
+                 :virtual-scroll="virtualScrollOptions"/>
       </el-col>
     </el-row>
   </div>
@@ -95,7 +105,7 @@ const data = reactive({
   theme: 'dark',
   // 语言类型（高亮用）
   language: 'plaintext',
-  //输入延迟时间（毫秒），适合防抖场景，这里设为0立即更新
+  // 输入延迟时间（毫秒），用于降低大文本输入时的频繁重算
   inputDelay: 500,
   //历史版本文本 左侧
   prevText: '',
@@ -146,8 +156,10 @@ const text2 = `合同编号：ABC-2025-001
 合同履行过程中发生争议的，双方应协商解决；协商不成的，提交合同签订地人民法院诉讼解决。
 `;
 onMounted(() => {
-  data.prevText = text1
-  data.currText = text2
+  if (!data.prevText.trim() && !data.currText.trim()) {
+    data.prevText = text1
+    data.currText = text2
+  }
 })
 
 // 计算两个框内的文本是否输入了对应内容且完全一致
@@ -169,4 +181,14 @@ const handleClearText = () => {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.language-select {
+  width: 100%;
+  max-width: 240px;
+}
+
+.text-input {
+  width: 100%;
+  max-width: 600px;
+}
+</style>
